@@ -126,7 +126,8 @@
                     <div class="row">
                         <div class="col-lg-12 grid-margin stretch-card">
                             <div class="card">
-                                <input class="form-control" type="text" placeholder="Search" aria-label="Search">
+                                <!-- <input class="form-control" type="text" placeholder="Search" aria-label="Search"> -->
+                                <SearhJob></SearhJob>
                             </div>
                         </div>
                         <div class="col-lg-12 grid-margin stretch-card">
@@ -224,7 +225,7 @@
 </template>
 
 <script>
-    // import HelloWorld from './components/HelloWorld.vue'
+    import SearhJob from './components/SearhJob.vue'
     import axios from 'axios';
 
     let HOST_NAME = 'http://localhost:9000/api/v1/';
@@ -242,7 +243,9 @@
 
     export default {
         name: 'app',
-        components: {},
+        components: {
+            SearhJob,
+        },
         data() {
             return {
                 user: {
