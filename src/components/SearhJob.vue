@@ -1,17 +1,17 @@
 <template>
-	<Suggestions
+    <Suggestions
     v-model="query"
     :options="options"
-    :onInputChange="onCountryInputChange">
+    :onInputChange="onInputChange">
     </Suggestions>
 </template>
 
 <script>
-
+import axios from 'axios'
 import Suggestions from 'v-suggestions'
 import 'v-suggestions/dist/v-suggestions.css'
 
-// let API_SEARCH_JOB = HOST_NAME + 'search/jobs?q={{q}}&limit={{limit}}';
+let API_SEARCH_JOB = 'http://192.168.217.136:8080/api/v1/search/job?q={{q}}&limit=10'
 
 export default {
     name: 'SearhJob',
@@ -19,26 +19,30 @@ export default {
         Suggestions
     },
     data () {
-      let countries = ['Heard Island and Mcdonald Islands', 'Holy See (Vatican City State)', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Vietnam']
+      let jobs = []
       return {
         query: '',
-        countries: countries,
+        jobs: jobs,
         selectedCountry: null,
-        options: {}
+        options: {
+
+        }
       }
     },
     methods: {
-      onCountryInputChange (query) {
+      onInputChange (query) {
         if (query.trim().length === 0) {
           return null
         }
-        // return the matching countries as an array
-        return this.countries.filter((country) => {
-          return country.toLowerCase().includes(query.toLowerCase())
-        })
+        axios.get(API_SEARCH_JOB.replace('{{q}}', query))
+          .then(response => {
+            this.jobs = response.data.jobs
+          });
+        this.$emit('search-job', this.jobs)
+        return [];
       },
-      onCountrySelected (item) {
-        this.selectedCountry = item
+      onJobSelected (item) {
+        this.selectedJob = item
       },
       onSearchItemSelected (item) {
         this.selectedSearchItem = item
