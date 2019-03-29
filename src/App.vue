@@ -6,112 +6,21 @@
         <div class="container-fluid page-body-wrapper">
             <!-- partial:../../partials/_sidebar.html -->
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
-                <ul class="nav">
-                    <li class="nav-item nav-profile">
-                        <div class="nav-link">
-                            <div class="user-wrapper">
-                                <div class="profile-image">
-                                    <img src="image/face1.jpg" alt="profile image">
-                                </div>
-                                    <div class="text-wrapper">
-                                        <p class="profile-name">{{ user.fullname}}</p>
-                                        <div>
-                                            <small class="designation text-muted">Engineer</small>
-                                            <span class="status-indicator online"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <i class="menu-icon mdi mdi-television"></i>
-                            <span class="menu-title">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="menu-icon mdi mdi-sticker"></i><span
-                                class="menu-title">Icons</span></a>
-                    </li>
-                </ul>
+                <SideBar v-bind:user="user" v-on:update-data="goToHomePage"></SideBar>
             </nav>
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
                     <div class="row">
-                        <div class="col-lg-12 grid-margin stretch-card">
+                        <div v-if="renderList" class="col-lg-12 grid-margin stretch-card">
                             <div class="card">
-                                <SearhJob @search-job="updateJobs"></SearhJob>
+                                <SearhJob @search-job="updateJobs" ></SearhJob>
                             </div>
                         </div>
-                        <div class="col-lg-12 grid-margin stretch-card">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">ETL Job</h4>
-                                    <div class="table-responsive">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th># Job ID</th>
-                                                    <th>Job name</th>
-                                                    <th>Scheduler Type</th>
-                                                    <th>Repeat</th>
-                                                    <th>Created Date</th>
-                                                    <th>Modified Date</th>
-                                                    <th>Status</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr v-for="job in jobs" :key="job.id">
-                                                    <td>{{ job.id }}</td>
-                                                    <td>{{ job.name }}</td>
-                                                    <td v-if="job.scheduler_type == 0">None</td>
-                                                    <td v-else-if="job.scheduler_type == 1">Interval</td>
-                                                    <td v-else-if="job.scheduler_type == 2">Daily</td>
-                                                    <td v-else-if="job.scheduler_type == 3">Weekly</td>
-                                                    <td v-else-if="job.scheduler_type == 4">Monthly</td>
-                                                    <td>{{ job.is_repeat }}</td>
-                                                    <td>{{ job.created_date}}</td>
-                                                    <td>{{ job.modified_date}}</td>
-                                                    <td>
-                                                        <label class="badge badge-warning" v-if="job.status == 0">Wait</label>
-                                                        <label class="badge badge-success" v-else-if="job.status == 1">Running</label>
-                                                        <label class="badge badge-danger" v-else-if="job.status == 2">Error</label>
-                                                    </td>
-                                                    <td v-on:click="runJob(job)" style="cursor: pointer;">
-                                                        <a v-if="job.status == 0"><img src="image/start.png"></a>
-                                                        <a v-else-if="job.status == 1"><img src="image/stop.png"></a>
-                                                        <a v-else><img src="image/start.png"></a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer-paginaton">
-                            <ul class="pagination justify-content-center">
-                                <li class="page-item disabled" v-if="offset == 0">
-                                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                                </li>
-                                <li class="page-item" v-else>
-                                    <a class="page-link" tabindex="-1" v-on:click="changeOffset(-1)">Previous</a>
-                                </li>
-                                <li class="page-item"><a class="page-link">{{ offsetPlus(1) }}</a></li>
-                                <li class="page-item" v-if="has_next == true" v-on:click="changeOffset(1)">
-                                    <a class="page-link">{{ offsetPlus(2)}}</a>
-                                </li>
-                                <li class="page-item"><a class="page-link">...</a></li>
-                                <li class="page-item" v-if="has_next == true">
-                                    <a class="page-link" v-on:click="changeOffset(1)">Next</a>
-                                </li>
-                                <li class="page-item disabled" v-else>
-                                    <a class="page-link" tabindex="-1">Next</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <JobListCard v-if="renderList" v-bind:jobs="jobs" v-on:emit-run-job="runJob" v-on:emit-detail-job="detailJob"></JobListCard>
+                        <Pagination v-if="renderList" v-bind:limit="limit" v-bind:offset="offset" v-bind:has_next="has_next" 
+                                    v-on:change-offset="changeOffset"></Pagination>
+                        <JobDetailCard v-else v-bind:job="job_detail"></JobDetailCard>
                     </div>
                 </div>
                 <!-- content-wrapper ends -->
@@ -119,10 +28,7 @@
                 <footer class="footer">
                     <div class="container-fluid clearfix">
                         <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © 2018
-              <a href="http://www.five9.vn/" target="_blank">Five9.vn</a>. All rights reserved.</span>
-                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted &amp; made with
-              <i class="mdi mdi-heart text-danger"></i>
-            </span>
+                        <a href="http://www.five9.vn/" target="_blank">Five9.Vn</a>. All rights reserved.</span>
                     </div>
                 </footer>
                 <!-- partial -->
@@ -132,15 +38,22 @@
         <!-- page-body-wrapper ends -->
     </div>
 </template>
+
 <script>
 import SearhJob from './components/SearhJob.vue'
 import Navbar from './components/Navbar.vue'
+import SideBar from './components/SideBar.vue'
+import JobListCard from './components/JobListCard.vue'
+import JobDetailCard from './components/JobDetailCard.vue'
+import Pagination from './components/Pagination.vue'
+
 import axios from 'axios';
 
-const hostName = 'http://192.168.217.136:8080/api/v1/'
-let API_GET_JOB = hostName + 'jobs?limit={{limit}}&offset={{offset}}'
-let API_START_JOB = hostName + 'startJob'
-let API_STOP_JOB = hostName + 'stopJob'
+const HOST_NAME = 'http://192.168.106.60:8080/api/v1/'
+let API_GET_JOB = HOST_NAME + 'jobs?limit={{limit}}&offset={{offset}}'
+let API_START_JOB = HOST_NAME + 'startJob?name={{name}}'
+let API_STOP_JOB = HOST_NAME + 'stopJob?name={{name}}&id={{id}}'
+// let API_SEARCH_JOB = HOST_NAME + 'search?q={{q}}&limit=10'
 
 const configCORS = {
     headers: {
@@ -153,10 +66,15 @@ export default {
     name: 'app',
     components: {
         SearhJob,
-        Navbar
+        Navbar,
+        SideBar,
+        JobListCard,
+        JobDetailCard,
+        Pagination
     },
     data() {
         return {
+            renderList: true,
             user: {
                 fullname: 'Quan Pham Van',
                 firstname: 'Quan'
@@ -166,36 +84,45 @@ export default {
                     message: 'ETL job KOL_FOLLOWER_CUBE error',
                     time: new Date()
                 },
-                {
-                    id: 2,
-                    message: 'Application 2 error',
-                    time: new Date()
-                }
             ],
-            limit: 10,
-            offset: 0,
             jobs: null,
             has_next: null,
-            action: null
+            limit: 10,
+            offset : 0,
+            action: null,
+            job_detail: null
         }
     },
     methods: {
+        getJobList() {
+            let url = API_GET_JOB.replace('{{limit}}', this.limit).replace('{{offset}}', this.offset);
+            axios.get(url, configCORS)
+                .then(response => {
+                    this.jobs = response.data.jobs;
+                    this.has_next = response.data.has_next
+                });
+        },
         runJob(job) {
-            let message = 'Do you want to run this ETL';
-            let url = API_START_JOB
-            if (job.status === 1) {
-                url = API_STOP_JOB
-                message = 'Do you want to stop this ETL job'
+            let message = 'Do you want to {{action}} ' + job.name;
+            let url = API_START_JOB.replace('{{name}}', job.name)
+
+            if (job.status === "Running") {
+                url = API_STOP_JOB.replace('{{name}}', job.name).replace('{{id}}', job.id)
+                message = message.replace('{{action}}', 'stop')
+            } else {
+                message = message.replace('{{action}}', 'start')
             }
+
             if (confirm(message)) {
                 axios.post(url, job, configCORS)
                     .then(res => {
                         if (res.status === 200) {
                             if (job.status === 1) {
-                                alert("Stop job success")
+                                alert("Stop job success");
                             } else {
-                                alert("Start job success")
+                                alert("Start job success");
                             }
+                            this.updateData();
                         } else {
                             alert("Error " + res.status)
                         }
@@ -205,15 +132,6 @@ export default {
                     });
             }
         },
-        updateData() {
-            let url = API_GET_JOB.replace('{{limit}}', this.limit).replace('{{offset}}', this.offset);
-            axios.get(url, configCORS)
-                .then(response => {
-                    this.jobs = response.data.jobs;
-                    this.has_next = response.data.has_next
-                });
-            this.$forceUpdate();
-        },
         changeOffset(i) {
             this.offset = this.offset + i * this.limit;
             this.updateData();
@@ -221,17 +139,20 @@ export default {
         offsetPlus(i) {
             return this.offset / this.limit + i
         },
-        updateJobs(items) {
-            this.jobs = items
+        detailJob(job) {
+            this.renderList = false;
+            this.job_detail = job;
+        },
+        updateData() {
+            this.getJobList();
             this.$forceUpdate();
+        },
+        goToHomePage() {
+            this.renderList = true;
         }
     },
     mounted() {
-        axios.get(API_GET_JOB.replace('{{limit}}', this.limit).replace('{{offset}}', this.offset))
-            .then(response => {
-                this.jobs = response.data.jobs;
-                this.has_next = response.data.has_next
-            })
+        this.getJobList();
     }
 }
 </script>

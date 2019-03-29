@@ -7,11 +7,10 @@
 </template>
 
 <script>
-import axios from 'axios'
+
 import Suggestions from 'v-suggestions'
 import 'v-suggestions/dist/v-suggestions.css'
 
-let API_SEARCH_JOB = 'http://192.168.217.136:8080/api/v1/search/job?q={{q}}&limit=10'
 
 export default {
     name: 'SearhJob',
@@ -34,11 +33,7 @@ export default {
         if (query.trim().length === 0) {
           return null
         }
-        axios.get(API_SEARCH_JOB.replace('{{q}}', query))
-          .then(response => {
-            this.jobs = response.data.jobs
-          });
-        this.$emit('search-job', this.jobs)
+        this.$emit('search-job', 1)
         return [];
       },
       onJobSelected (item) {
