@@ -17,13 +17,18 @@
             </div>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="#" v-on:click="$emit('update-data')" >
                 <i class="menu-icon mdi mdi-television"></i>
-                <span class="menu-title" v-on:click="$emit('update-data')">Dashboard</span>
+                <span class="menu-title">Dashboard</span>
             </a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#"><i class="menu-icon mdi mdi-sticker"></i><span class="menu-title">Icons</span></a>
+            <a class="nav-link" href="#" v-on:click="$emit('enable-search')">
+                <i class="menu-icon mdi-file-find"></i><span class="menu-title">Search</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#"><i class="menu-icon mdi mdi-logout"></i><span class="menu-title">Logout</span></a>
         </li>
     </ul>
 </template>

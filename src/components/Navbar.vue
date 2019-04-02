@@ -10,14 +10,15 @@
         </div>
         <div class="navbar-menu-wrapper d-flex align-items-center">
             <ul class="navbar-nav navbar-nav-left header-links d-none d-md-flex">
-                <li class="nav-item">
-                    <a href="#" class="nav-link">Scheduler<span class="badge badge-primary ml-1">New</span></a>
-                </li>
-                <li class="nav-item active">
+<!--                 <li class="nav-item">
+                    <a href="#" class="nav-link">Dashboard<span class="badge badge-primary ml-1">New</span></a>
+                </li> -->
+<!--                 <li class="nav-item active">
                     <a href="#" class="nav-link"><i class="mdi mdi-elevation-rise"></i>Reports</a>
-                </li>
-                <li class="nav-item"><a href="#" class="nav-link"><i class="mdi mdi-bookmark-plus-outline"></i>Score</a>
-                </li>
+                </li> -->
+<!--                 <li class="nav-item">
+                    <a href="#" class="nav-link" v-on:click="$emit('enable-search')"><i class="mdi mdi-bookmark-plus-outline"></i>Search</a>
+                </li> -->
             </ul>
             <ul class="navbar-nav navbar-nav-right">
                 <li class="nav-item dropdown">
