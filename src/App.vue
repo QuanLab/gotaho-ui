@@ -14,13 +14,16 @@
                     <div class="row">
                         <div v-if="renderList" class="col-lg-12 grid-margin stretch-card">
                             <div class="card">
-                                <SearhJob @search-job="updateJobs" ></SearhJob>
+                                <SearhJob></SearhJob>
                             </div>
                         </div>
-                        <JobListCard v-if="renderList" v-bind:jobs="jobs" v-on:emit-run-job="runJob" v-on:emit-detail-job="detailJob"></JobListCard>
+                        <JobListCard v-if="renderList" v-bind:jobs="jobs" v-on:start="startJob" v-on:stop="stopJob" v-on:detail="detailJob">
+                        </JobListCard>
                         <Pagination v-if="renderList" v-bind:limit="limit" v-bind:offset="offset" v-bind:has_next="has_next" 
-                                    v-on:change-offset="changeOffset"></Pagination>
-                        <JobDetailCard v-else v-bind:job="job_detail"></JobDetailCard>
+                                    v-on:change-offset="changeOffset">
+                        </Pagination>
+                        <JobDetailCard v-else v-bind:job="job_detail" v-bind:instances="instances" v-on:stop="stopJob" v-on:start="startJob" v-on:update="updateJob">
+                        </JobDetailCard>
                     </div>
                 </div>
                 <!-- content-wrapper ends -->
@@ -46,14 +49,17 @@ import SideBar from './components/SideBar.vue'
 import JobListCard from './components/JobListCard.vue'
 import JobDetailCard from './components/JobDetailCard.vue'
 import Pagination from './components/Pagination.vue'
-
 import axios from 'axios';
 
 const HOST_NAME = 'http://192.168.106.60:8080/api/v1/'
+
 let API_GET_JOB = HOST_NAME + 'jobs?limit={{limit}}&offset={{offset}}'
 let API_START_JOB = HOST_NAME + 'startJob?name={{name}}'
-let API_STOP_JOB = HOST_NAME + 'stopJob?name={{name}}&id={{id}}'
+let API_STOP_JOB = HOST_NAME + 'stopJob?name={{name}}'
+let API_JOB_STATUS_LIST = HOST_NAME + 'jobStatusList?name={{name}}'
 // let API_SEARCH_JOB = HOST_NAME + 'search?q={{q}}&limit=10'
+let API_UPDATE_JOB = HOST_NAME + 'job'
+
 
 const configCORS = {
     headers: {
@@ -89,8 +95,8 @@ export default {
             has_next: null,
             limit: 10,
             offset : 0,
-            action: null,
-            job_detail: null
+            job_detail: null,
+            instances: null
         }
     },
     methods: {
@@ -102,25 +108,28 @@ export default {
                     this.has_next = response.data.has_next
                 });
         },
-        runJob(job) {
-            let message = 'Do you want to {{action}} ' + job.name;
+        getJobStatusList() {
+            let url = API_JOB_STATUS_LIST.replace('{{name}}', this.job_detail.name);
+            axios.get(url, configCORS)
+                .then(response => {
+                    this.instances = response.data;
+                });
+        },
+        startJob(job) {
+            let message = 'Do you want to start ' + job.name;
             let url = API_START_JOB.replace('{{name}}', job.name)
-
-            if (job.status === "Running") {
-                url = API_STOP_JOB.replace('{{name}}', job.name).replace('{{id}}', job.id)
-                message = message.replace('{{action}}', 'stop')
-            } else {
-                message = message.replace('{{action}}', 'start')
+            if(job['instanceid'] !== 'undefined') {
+                url = url + '&instanceId=' + job.instanceid
             }
 
             if (confirm(message)) {
-                axios.post(url, job, configCORS)
+                axios.post(url, {'name' : job.name, 'instanceid': job['instanceid'] }, configCORS)
                     .then(res => {
                         if (res.status === 200) {
-                            if (job.status === 1) {
-                                alert("Stop job success");
+                            if (res.data.status === 1) {
+                                alert(res.data.message);
                             } else {
-                                alert("Start job success");
+                                alert(res.data.message);
                             }
                             this.updateData();
                         } else {
@@ -132,6 +141,50 @@ export default {
                     });
             }
         },
+        stopJob(job) {
+            let message = 'Do you want to stop ' + job.name;
+            let url = API_STOP_JOB.replace('{{name}}', job.name)
+            if(job['instanceid'] !== 'undefined') {
+                url = url + '&instanceId=' + job['instanceid']
+            }
+
+            if (confirm(message)) {
+                axios.post(url, {'name' : job.name, 'instanceid': job['instanceid'] }, configCORS)
+                    .then(res => {
+                        if (res.status === 200) {
+                            if (res.data.status === 1) {
+                                alert("Stop job success");
+                            } else {
+                                alert("Stop job error");
+                            }
+                            this.updateData();
+                        } else {
+                            alert("Error " + res.status)
+                        }
+                    })
+                    .catch(err => {
+                        alert(err)
+                    });
+            }
+        },
+        updateJob(job) {
+            axios.post(API_UPDATE_JOB, job, configCORS)
+                    .then(res => {
+                        if (res.status === 200) {
+                            if (res.data.status === 1) {
+                                alert("Update job success");
+                            } else {
+                                alert("Update job failed");
+                            }
+                        } else {
+                            alert("Error " + res.status)
+                        }
+                    })
+                    .catch(err => {
+                        alert(err)
+                    });
+            this.$forceUpdate();
+        },
         changeOffset(i) {
             this.offset = this.offset + i * this.limit;
             this.updateData();
@@ -142,6 +195,7 @@ export default {
         detailJob(job) {
             this.renderList = false;
             this.job_detail = job;
+            this.instances = this.getJobStatusList();
         },
         updateData() {
             this.getJobList();
