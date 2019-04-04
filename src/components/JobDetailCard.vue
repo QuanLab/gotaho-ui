@@ -57,7 +57,7 @@
                 <div class="col-sm-4">
                   <div class="form-radio">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input" name="isRepeat" id="isRepeat1" value="option1" :checked="job.is_repeat==='Y'" @change="onChangeRepeat" > Yes
+                      <input type="radio" class="form-check-input" name="isRepeat" id="isRepeat1" value="option1" :checked="job.is_repeat==='Y'" @change="onChangeRepeat"> Yes
                       <i class="input-helper"></i></label>
                   </div>
                 </div>
@@ -76,7 +76,8 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Interval Of Seconds</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" :value="job.interval_seconds" :disabled="disableEdit(job.scheduler_type, 'interval_seconds')">
+                  <input type="text" class="form-control" min="0" max="59" v-model="job.interval_seconds"
+                   :placeholder="job.interval_seconds" :disabled="disableEdit(job.scheduler_type, 'interval_seconds')">
                 </div>
               </div>
             </div>
@@ -84,7 +85,8 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Interval Of Minutes</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" :value="job.interval_minutes" :disabled="disableEdit(job.scheduler_type, 'interval_minutes')">
+                  <input type="text" class="form-control" min="0" :placeholder="job.interval_minutes" v-model="job.interval_minutes"
+                   :disabled="disableEdit(job.scheduler_type, 'interval_minutes')">
                 </div>
               </div>
             </div>
@@ -94,7 +96,8 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Hours</label>
                 <div class="col-sm-9">
-                  <input type="number" class="form-control" max="23" :value="job.hours" :disabled="disableEdit(job.scheduler_type, 'hours')">
+                  <input type="number" class="form-control" min="0" max="23" :placeholder="job.hours"  v-model="job.hours"
+                   :disabled="disableEdit(job.scheduler_type, 'hours')">
                 </div>
               </div>
             </div>
@@ -102,7 +105,8 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Minutes</label>
                 <div class="col-sm-9">
-                  <input type="number" class="form-control" max="59" :value="job.minutes" :disabled="disableEdit(job.scheduler_type, 'minutes')">
+                  <input type="number" class="form-control" min="0" max="59" :placeholder="job.minutes" v-model="job.minutes" 
+                  :disabled="disableEdit(job.scheduler_type, 'minutes')">
                 </div>
               </div>
             </div>
@@ -112,14 +116,14 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Day of week</label>
                 <div class="col-sm-9">
-                  <select class="form-control" :disabled="disableEdit(job.scheduler_type, 'week_day')">
-                    <option :selected="job.week_day === 1">Sunday</option>
-                    <option :selected="job.week_day === 2">Monday</option>
-                    <option :selected="job.week_day === 3">Tuesday</option>
-                    <option :selected="job.week_day === 4">Wednesday</option>
-                    <option :selected="job.week_day === 5">Thursday</option>
-                    <option :selected="job.week_day === 6">Friday</option>
-                    <option :selected="job.week_day === 7">Saturday</option>
+                  <select class="form-control" @change="onChangeDayOfWeek" :disabled="disableEdit(job.scheduler_type, 'week_day')">
+                    <option :selected="job.week_day === 1" value="1">Sunday</option>
+                    <option :selected="job.week_day === 2" value="2">Monday</option>
+                    <option :selected="job.week_day === 3" value="3">Tuesday</option>
+                    <option :selected="job.week_day === 4" value="4">Wednesday</option>
+                    <option :selected="job.week_day === 5" value="5">Thursday</option>
+                    <option :selected="job.week_day === 6" value="6">Friday</option>
+                    <option :selected="job.week_day === 7" value="7">Saturday</option>
                   </select>
                 </div>
               </div>
@@ -128,7 +132,8 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Day of month</label>
                 <div class="col-sm-9">
-                  <input type="number" class="form-control" max="30" :value="job.day_of_month" :disabled="disableEdit(job.scheduler_type, 'day_of_month')">
+                  <input type="number" class="form-control" max="30" :placeholder="job.day_of_month" v-model="job.day_of_month"
+                   :disabled="disableEdit(job.scheduler_type, 'day_of_month')">
                 </div>
               </div>
             </div>
@@ -170,7 +175,7 @@
       </div>
     </div>
     <Modal v-if="modalVisible" @close="modalVisible = false" v-model="modalVisible" v-bind:item="instance"></Modal>
-    <button type="submit" v-on:click="$emit('update', job)" class="btn btn-success mr-2">Save</button>
+    <button type="submit" v-on:click="updateJob" class="btn btn-success mr-2">Save</button>
   </div>
 </template>
 <script>
@@ -179,7 +184,7 @@ import axios from 'axios';
 
 export default {
   name: 'JobDetailCard',
-  props: ['job', 'instances'],
+  props: ['job_detail', 'instances'],
   components: {
     Modal
   },
@@ -187,7 +192,11 @@ export default {
     return {
       modalVisible: false,
       instance: null,
+      job: null,
     }
+  },
+  created: function() {
+    this.job = this.job_detail;
   },
   methods: {
     startJob(item) {
@@ -198,10 +207,14 @@ export default {
       this.job['instanceid'] = item.id;
       this.$emit('stop', this.job)
     },
+    updateJob() {
+      this.job_detail = this.job
+      this.$emit('update', this.job)
+    },
     getJobStatus(item) {
       alert(item)
     },
-    openModal(item){
+    openModal(item) {
       axios.get('http://192.168.106.60:8080/api/v1/jobStatus?name=' + this.job.name + '&id=' + item.id)
         .then(response => {
           this.instance = response.data;
@@ -220,6 +233,9 @@ export default {
       } else {
         this.job.is_repeat = 'Y'
       }
+    },
+    onChangeDayOfWeek(e) {
+      this.job.week_day = e.target.options.selectedIndex + 1;
     },
     disableEdit(scheduler_type, value_str) {
       if (scheduler_type === 0) {

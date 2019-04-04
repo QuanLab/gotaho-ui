@@ -8,15 +8,14 @@
             <div class="col-md-6">
               <div class="form-group row"><label class="col-sm-3 col-form-label">Search</label>
                 <div class="col-sm-9">
-                  <suggestions v-model="query" :options="options" :onInputChange="onCountryInputChange" :onItemSelected="onSearchItemSelected"></suggestions>
+                  <suggestions v-model="query" :options="options" :onInputChange="onInputChange" :onItemSelected="onSearchItemSelected"></suggestions>
                 </div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-group row"><label class="col-sm-3 col-form-label">Status</label>
                 <div class="col-sm-9">
-                  <select id="jobStatus" class="form-control">
-                    <option>All</option>
+                  <select id="jobStatus" v-model="query_wrapper.status" class="form-control">
                     <option>Running</option>
                     <option>Finished</option>
                     <option>Stopped</option>
@@ -32,8 +31,7 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Scheduler Type</label>
                 <div class="col-sm-9">
-                  <select class="form-control" id="schedulerType">
-                    <option value="-1">All</option>
+                  <select v-model="query_wrapper.schedulerType" class="form-control" id="schedulerType">
                     <option value="0">No Scheduling</option>
                     <option value="1">Interval</option>
                     <option value="2">Daily</option>
@@ -45,14 +43,14 @@
             </div>
             <div class="col-md-6">
               <div class="form-group row"><label class="col-sm-3 col-form-label">Created Date</label>
-                <div class="col-sm-9"><input type="date" max="30" class="form-control" id=""></div>
+                <div class="col-sm-9"><input type="date" class="form-control" v-model="query_wrapper.createdDate"></div>
               </div>
             </div>
           </div>
         </form>
       </div>
     </div>
-    <button type="submit" v-on:click="onCountryInputChange" class="btn btn-success mr-2">Search</button>
+    <button type="submit" v-on:click="submitSearch" class="btn btn-success mr-2">Search</button>
   </div>
 </template>
 <script>
@@ -69,19 +67,31 @@ export default {
       query: '',
       jobs: jobs,
       selectedCountry: null,
-      options: {}
+      options: {},
+      query_wrapper:  {
+        status: '',
+        schedulerType: '',
+        query : '',
+        createdDate: ''
+      }
     }
   },
   methods: {
-    onCountryInputChange(query) {
+    onInputChange(query) {
       if (query.trim().length === 0) {
         return null
       }
-      this.$emit('search', this.query)
+      this.query_wrapper.query = this.query
+      // alert(JSON.stringify(this.query_wrapper))
+      this.$emit('search', this.query_wrapper)
       return []
     },
     onSearchItemSelected(item) {
       this.selectedSearchItem = item
+    },
+    submitSearch() {
+      this.query_wrapper.query = this.query
+      this.$emit('search', this.query_wrapper)
     }
   }
 }
