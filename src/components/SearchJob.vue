@@ -7,8 +7,26 @@
           <div class="row">
             <div class="col-md-6">
               <div class="form-group row"><label class="col-sm-3 col-form-label">Search</label>
-                <div class="col-sm-9">
+                <div class="col-md-6">
                   <suggestions v-model="query" :options="options" :onInputChange="onInputChange" :onItemSelected="onSearchItemSelected"></suggestions>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Scheduler Type</label>
+                <div class="col-sm-9">
+                  <select v-model="query_wrapper.schedulerType" class="form-control" id="schedulerType">
+                    <option value="0">No Scheduling</option>
+                    <option value="1">Interval</option>
+                    <option value="2">Daily</option>
+                    <option value="3">Weekly</option>
+                    <option value="4">Monthly</option>
+                  </select>
                 </div>
               </div>
             </div>
@@ -28,22 +46,13 @@
           </div>
           <div class="row">
             <div class="col-md-6">
-              <div class="form-group row">
-                <label class="col-sm-3 col-form-label">Scheduler Type</label>
-                <div class="col-sm-9">
-                  <select v-model="query_wrapper.schedulerType" class="form-control" id="schedulerType">
-                    <option value="0">No Scheduling</option>
-                    <option value="1">Interval</option>
-                    <option value="2">Daily</option>
-                    <option value="3">Weekly</option>
-                    <option value="4">Monthly</option>
-                  </select>
-                </div>
+              <div class="form-group row"><label class="col-sm-3 col-form-label">From Date</label>
+                <div class="col-sm-9"><input type="date" class="form-control" v-model="query_wrapper.from"></div>
               </div>
             </div>
             <div class="col-md-6">
-              <div class="form-group row"><label class="col-sm-3 col-form-label">Created Date</label>
-                <div class="col-sm-9"><input type="date" class="form-control" v-model="query_wrapper.createdDate"></div>
+              <div class="form-group row"><label class="col-sm-3 col-form-label">To Date</label>
+                <div class="col-sm-9"><input type="date" class="form-control" v-model="query_wrapper.to"></div>
               </div>
             </div>
           </div>
@@ -68,11 +77,12 @@ export default {
       jobs: jobs,
       selectedCountry: null,
       options: {},
-      query_wrapper:  {
+      query_wrapper: {
         status: '',
         schedulerType: '',
-        query : '',
-        createdDate: ''
+        query: '',
+        from: '',
+        to: ''
       }
     }
   },

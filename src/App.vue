@@ -1,7 +1,7 @@
 <template>
   <div class="container-scroller" id="app">
     <!-- partial:../../partials/_navbar.html -->
-    <Navbar v-bind:user="user" v-bind:notifications="notifications" v-on:enable-search="enableSearch"></Navbar>
+    <Navbar v-bind:user="user" v-bind:notifications="notifications" v-on:enable-search="enableSearch" v-on:view-notifications="viewNotification"></Navbar>
     <!-- partial -->
     <div class="container-fluid page-body-wrapper">
       <!-- partial:../../partials/_sidebar.html -->
@@ -19,10 +19,9 @@
             </div>
             <JobListCard v-if="renderList" v-bind:jobs="jobs" v-on:start="startJob" v-on:stop="stopJob" v-on:detail="detailJob">
             </JobListCard>
-            <Pagination v-if="renderList" v-bind:limit="limit" v-bind:offset="offset" v-bind:has_next="has_next" v-on:change-offset="changeOffset">
-            </Pagination>
-            <JobDetailCard v-else v-bind:job_detail="job_detail" v-bind:instances="instances" v-on:stop="stopJob" v-on:start="startJob" v-on:update="updateJob">
-            </JobDetailCard>
+            <Pagination v-if="renderList" v-bind:limit="limit" v-bind:offset="offset" v-bind:has_next="has_next" v-on:change-offset="changeOffset"></Pagination>
+            <JobDetailCard v-else v-bind:job_detail="job_detail" v-bind:instances="instances" v-on:stop="stopJob" v-on:start="startJob" 
+                        v-on:update="updateJob"></JobDetailCard>
           </div>
         </div>
         <!-- content-wrapper ends -->
@@ -55,9 +54,9 @@ let API_GET_JOB = HOST_NAME + 'jobs?limit={{limit}}&offset={{offset}}'
 let API_START_JOB = HOST_NAME + 'startJob?name={{name}}'
 let API_STOP_JOB = HOST_NAME + 'stopJob?name={{name}}'
 let API_JOB_STATUS_LIST = HOST_NAME + 'jobStatusList?name={{name}}'
-// let API_SEARCH_JOB = HOST_NAME + 'search?q={{q}}&limit=10'
-let API_ADVANCED_SEARCH_JOB = HOST_NAME + 'advancedSearch?q={{q}}&status={{status}}&created_date={{created_date}}&scheduler_type={{scheduler_type}}&limit=10'
+let API_ADVANCED_SEARCH_JOB = HOST_NAME + 'advancedSearch?q={{q}}&status={{status}}&from={{from}}&to={{to}}&scheduler_type={{scheduler_type}}&limit=10'
 let API_UPDATE_JOB = HOST_NAME + 'job'
+let API_GET_NOTIFICATION = HOST_NAME + 'notificationList?limit={{limit}}&offset={{offset}}'
 
 const configCORS = {
   headers: {
@@ -110,18 +109,11 @@ export default {
         this.renderList = true;
         this.showSearch = true;
     },
-    // searchJob(query_wrapper) {
-    //   let url = API_SEARCH_JOB.replace('{{q}}', query_wrapper['query']);
-    //   axios.get(url)
-    //     .then(response => {
-    //       this.jobs = response.data
-    //       this.$forceUpdate();
-    //     });
-    // },
     searchJob(query_wrapper) {
       let url = API_ADVANCED_SEARCH_JOB.replace('{{q}}', query_wrapper['query'])
       .replace('{{status}}', query_wrapper['status'])
-      .replace('{{created_date}}', query_wrapper['createdDate'])
+      .replace('{{from}}', query_wrapper['from'])
+      .replace('{{to}}', query_wrapper['to'])
       .replace('{{scheduler_type}}', query_wrapper['schedulerType'])
       axios.get(url)
         .then(response => {
@@ -223,6 +215,21 @@ export default {
       this.renderList = true;
       this.getJobList();
       this.$forceUpdate();
+    },
+    viewNotification() {
+        alert("view-notifications")
+        axios.get(API_GET_NOTIFICATION, configCORS)
+        .then(res => {
+          if (res.status === 200) {
+            this.notifications = res.data
+            alert(this.notifications)
+          } else {
+            alert("Error " + res.status)
+          }
+        })
+        .catch(err => {
+          alert(err)
+        });
     }
   },
   mounted() {

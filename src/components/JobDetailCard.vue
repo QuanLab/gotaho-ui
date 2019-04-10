@@ -76,7 +76,7 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Interval Of Seconds</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" min="0" max="59" v-model="job.interval_seconds"
+                  <input type="number" class="form-control" min="0" max="59" v-model="job.interval_seconds"
                    :placeholder="job.interval_seconds" :disabled="disableEdit(job.scheduler_type, 'interval_seconds')">
                 </div>
               </div>
@@ -85,7 +85,7 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Interval Of Minutes</label>
                 <div class="col-sm-9">
-                  <input type="text" class="form-control" min="0" :placeholder="job.interval_minutes" v-model="job.interval_minutes"
+                  <input type="number" class="form-control" min="0" :placeholder="job.interval_minutes" v-model="job.interval_minutes"
                    :disabled="disableEdit(job.scheduler_type, 'interval_minutes')">
                 </div>
               </div>
@@ -162,7 +162,8 @@
                 <!-- end of Modal Box show -->
                 <td>{{ item.log_date}}</td>
                 <td>
-                  <label class="badge badge-success">{{ item.status_desc }}</label>
+                  <label v-if="item.status_desc === 'Stoped(with errors)'" class="badge badge-danger">{{ item.status_desc }}</label>
+                  <label v-else class="badge badge-success">{{ item.status_desc }}</label>
                 </td>
                 <td style="cursor: pointer;">
                   <a v-if="item.status_desc === 'Running'" v-on:click="stopJob(item)"><img src="image/stop.png"></a>

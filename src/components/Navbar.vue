@@ -31,7 +31,7 @@
                                 <p class="mb-0 font-weight-normal float-left">
                                     You have {{ notifications.length }} new notifications
                                 </p>
-                                <span class="badge badge-pill badge-warning float-right">View all</span>
+                                <span class="badge badge-pill badge-warning float-right" v-on:click="$emit('view-notifications')">View all</span>
                             </a>
                         <div v-for="item in notifications" :key="item.id">
                             <div class="dropdown-divider"></div>
@@ -71,8 +71,6 @@
                                 </div>
                             </a>
                         <a class="dropdown-item mt-2">Manage Accounts</a>
-                        <a class="dropdown-item">Change Password</a>
-                        <a class="dropdown-item">Check Inbox</a>
                         <a class="dropdown-item">Sign Out</a>
                     </div>
                 </li>
