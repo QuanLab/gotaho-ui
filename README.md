@@ -1,4 +1,5 @@
-# hello-vue
+# Pentaho Monitoring
+Pentaho Monitoring is simple web interface allow admin to run stop, monitor running job, change scheduler.
 
 ## Project setup
 ```
