@@ -41,7 +41,7 @@
               <div class="form-group row">
                 <label class="col-sm-3 col-form-label">Scheduler Type</label>
                 <div class="col-sm-9">
-                  <select class="form-control" @change="onChangeSchedulerType">
+                  <select class="form-control" v-model="job.scheduler_type" @change="onChangeSchedulerType">
                     <option :selected="job.scheduler_type === 0" value="0">No Scheduling</option>
                     <option :selected="job.scheduler_type === 1" value="1">Interval</option>
                     <option :selected="job.scheduler_type === 2" value="2">Daily</option>
@@ -134,6 +134,37 @@
                 <div class="col-sm-9">
                   <input type="number" class="form-control" max="30" :placeholder="job.day_of_month" v-model="job.day_of_month"
                    :disabled="disableEdit(job.scheduler_type, 'day_of_month')">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Repeat</label>
+                <div class="col-sm-4">
+                  <div class="form-radio">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" name="cronEnable" id="isRepeat1" value="option1" 
+                      :checked="job.cron_enable===true" @change="onChangeEnableCron"> Enable
+                      <i class="input-helper"></i></label>
+                  </div>
+                </div>
+                <div class="col-sm-5">
+                  <div class="form-radio">
+                    <label class="form-check-label">
+                      <input type="radio" class="form-check-input" name="cronEnable" id="isRepeat2" value="option2" 
+                      :checked="job.cron_enable===false" @change="onChangeEnableCron"> Disable
+                      <i class="input-helper"></i></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group row">
+                <label class="col-sm-3 col-form-label">Cron Expression</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" :placeholder="job.cron" v-model="job.cron">
                 </div>
               </div>
             </div>
@@ -233,6 +264,12 @@ export default {
         this.job.is_repeat = 'N'
       } else {
         this.job.is_repeat = 'Y'
+      }
+    },
+    onChangeEnableCron() {
+      this.job.cron_enable = !this.job.cron_enable
+      if (this.job.cron_enable === true ) {
+        this.job.scheduler_type = 0
       }
     },
     onChangeDayOfWeek(e) {
