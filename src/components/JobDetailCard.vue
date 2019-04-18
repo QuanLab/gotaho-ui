@@ -145,7 +145,7 @@
                 <div class="col-sm-4">
                   <div class="form-radio">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input" name="cronEnable" id="isRepeat1" value="option1" 
+                      <input type="radio" class="form-check-input" name="cronEnable" id="cron1" value="option1" 
                       :checked="job.cron_enable===true" @change="onChangeEnableCron"> Enable
                       <i class="input-helper"></i></label>
                   </div>
@@ -153,7 +153,7 @@
                 <div class="col-sm-5">
                   <div class="form-radio">
                     <label class="form-check-label">
-                      <input type="radio" class="form-check-input" name="cronEnable" id="isRepeat2" value="option2" 
+                      <input type="radio" class="form-check-input" name="cronEnable" id="cron2" value="option2" 
                       :checked="job.cron_enable===false" @change="onChangeEnableCron"> Disable
                       <i class="input-helper"></i></label>
                   </div>
@@ -166,6 +166,18 @@
                 <div class="col-sm-9">
                   <input type="text" class="form-control" :placeholder="job.cron" v-model="job.cron">
                 </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group row"><label class="col-sm-3 col-form-label">Start Date</label>
+                <div class="col-sm-9"><input type="date" class="form-control" :placeholder="job.cron_start" v-model="job.cron_start"></div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group row"><label class="col-sm-3 col-form-label">End Date</label>
+                <div class="col-sm-9"><input type="date" class="form-control" :placeholder="job.cron_end" v-model="job.cron_end"></div>
               </div>
             </div>
           </div>

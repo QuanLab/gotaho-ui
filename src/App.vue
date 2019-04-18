@@ -51,8 +51,8 @@ import axios from 'axios'
 const HOST_NAME = 'http://192.168.106.60:8080/api/v1/'
 
 let API_GET_JOB = HOST_NAME + 'jobs?limit={{limit}}&offset={{offset}}'
-let API_START_JOB = HOST_NAME + 'startJob?name={{name}}'
-let API_STOP_JOB = HOST_NAME + 'stopJob?name={{name}}'
+let API_START_JOB = HOST_NAME + 'startJob'
+let API_STOP_JOB = HOST_NAME + 'stopJob'
 let API_JOB_STATUS_LIST = HOST_NAME + 'jobStatusList?name={{name}}'
 let API_ADVANCED_SEARCH_JOB = HOST_NAME + 'advancedSearch?q={{q}}&status={{status}}&from={{from}}&to={{to}}&scheduler_type={{scheduler_type}}&limit=10'
 let API_UPDATE_JOB = HOST_NAME + 'job'
@@ -130,13 +130,8 @@ export default {
     },
     startJob(job) {
       let message = 'Do you want to start ' + job.name;
-      let url = API_START_JOB.replace('{{name}}', job.name)
-      if (job['instanceid'] !== 'undefined') {
-        url = url + '&instanceId=' + job.instanceid
-      }
-
       if (confirm(message)) {
-        axios.post(url, { 'name': job.name, 'instanceid': job['instanceid'] }, configCORS)
+        axios.post(API_START_JOB, { 'name': job.name, 'instanceid': job['instanceid'] }, configCORS)
           .then(res => {
             if (res.status === 200) {
               if (res.data.status === 1) {
@@ -156,13 +151,8 @@ export default {
     },
     stopJob(job) {
       let message = 'Do you want to stop ' + job.name;
-      let url = API_STOP_JOB.replace('{{name}}', job.name)
-      if (job['instanceid'] !== 'undefined') {
-        url = url + '&instanceId=' + job['instanceid']
-      }
-
       if (confirm(message)) {
-        axios.post(url, { 'name': job.name, 'instanceid': job['instanceid'] }, configCORS)
+        axios.post(API_STOP_JOB, { 'name': job.name, 'instanceid': job['instanceid'] }, configCORS)
           .then(res => {
             if (res.status === 200) {
               if (res.data.status === 1) {
