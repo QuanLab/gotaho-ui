@@ -11,7 +11,6 @@
       <!-- partial -->
       <div class="main-panel">
         <div class="content-wrapper">
-          <div class="row">
             <div v-if="showSearch" class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <SearchJob v-on:search="searchJob"></SearchJob>
@@ -22,7 +21,6 @@
             <Pagination v-if="renderList" v-bind:limit="limit" v-bind:offset="offset" v-bind:has_next="has_next" v-on:change-offset="changeOffset"></Pagination>
             <JobDetailCard v-else v-bind:job_detail="job_detail" v-bind:instances="instances" v-on:stop="stopJob" v-on:start="startJob" 
                         v-on:update="updateJob"></JobDetailCard>
-          </div>
         </div>
         <!-- content-wrapper ends -->
         <!-- partial:../../partials/_footer.html -->
